@@ -31,6 +31,131 @@ html, body {
   flex: 1;
 }
 
+/* Range panel */
+#range-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 200px;
+  max-width: 40vw;
+  background: rgba(250, 250, 250, 0.98);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-size: 13px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  z-index: 500;
+}
+
+#filters h3 {
+  margin-top: 0;
+}
+
+.slider-group {
+  margin: 10px 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.slider-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.range-value {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+  color: #1f2d3d;
+}
+
+.slider-container {
+  position: relative;
+  flex: 1;
+  height: 22px;
+}
+
+.slider-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  border-radius: 999px;
+  background: #dadae5;
+}
+
+.slider-container input[type="range"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+}
+
+.slider-container input[type="range"]:focus {
+  outline: none;
+}
+
+.slider-container input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3264fe;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  position: relative;
+  pointer-events: auto;
+}
+
+.slider-container input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+
+.slider-container input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3264fe;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  border: none;
+  pointer-events: auto;
+}
+
+.thumb-min {
+  z-index: 2;
+}
+
+.thumb-max {
+  z-index: 3;
+}
+
+.thumb-active {
+  z-index: 4;
+}
+
 a {
   color: #0645ad;
   text-decoration: none;

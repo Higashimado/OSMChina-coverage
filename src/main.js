@@ -82,6 +82,90 @@ function updateSidePanel(p) {
 
 const markers = [];
 
+function getScoreFilterValues() {
+    const ranges = [1, 2, 3, 4].map((i) => {
+        const minEl = document.getElementById(`score${i}-min`);
+        const maxEl = document.getElementById(`score${i}-max`);
+        const minText = document.getElementById(`score${i}-min-text`);
+        const maxText = document.getElementById(`score${i}-max-text`);
+        const slider = document.getElementById(`score${i}-slider`);
+        const sliderTrack = slider.querySelector('.slider-track');
+        const sliderMax = Number(minEl.max) || 100;
+
+        let min = Number(minEl.value);
+        let max = Number(maxEl.value);
+
+        if (min > max) {
+            const tmp = min;
+            min = max;
+            max = tmp;
+            minEl.value = String(min);
+            maxEl.value = String(max);
+        }
+
+        minText.textContent = String(min);
+        maxText.textContent = String(max);
+
+        const minPercent = (min / sliderMax) * 100;
+        const maxPercent = (max / sliderMax) * 100;
+        sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${minPercent}% , #3264fe ${minPercent}% , #3264fe ${maxPercent}%, #dadae5 ${maxPercent}%)`;
+
+        return { min, max };
+    });
+
+    return {
+        score1: ranges[0],
+        score2: ranges[1],
+        score3: ranges[2],
+        score4: ranges[3],
+    };
+}
+
+function matchesFilters(p, filters) {
+    return (
+        p.score_1 >= filters.score1.min && p.score_1 <= filters.score1.max &&
+        p.score_2 >= filters.score2.min && p.score_2 <= filters.score2.max &&
+        p.score_3 >= filters.score3.min && p.score_3 <= filters.score3.max &&
+        p.score_4 >= filters.score4.min && p.score_4 <= filters.score4.max
+    );
+}
+
+function applyFilters() {
+    const filters = getScoreFilterValues();
+
+    markers.forEach(({ marker, point }) => {
+        const visible = matchesFilters(point, filters);
+        const isOnMap = map.hasLayer(marker);
+
+        if (visible && !isOnMap) {
+            marker.addTo(map);
+        } else if (!visible && isOnMap) {
+            marker.removeFrom(map);
+        }
+    });
+}
+
+function bindFilterEvents() {
+    [1, 2, 3, 4].forEach((i) => {
+        const minEl = document.getElementById(`score${i}-min`);
+        const maxEl = document.getElementById(`score${i}-max`);
+        const setActive = (activeEl, otherEl) => {
+            activeEl.classList.add('thumb-active');
+            otherEl.classList.remove('thumb-active');
+        };
+
+        minEl.addEventListener('input', applyFilters);
+        maxEl.addEventListener('input', applyFilters);
+
+        minEl.addEventListener('pointerdown', () => setActive(minEl, maxEl));
+        maxEl.addEventListener('pointerdown', () => setActive(maxEl, minEl));
+        minEl.addEventListener('touchstart', () => setActive(minEl, maxEl), { passive: true });
+        maxEl.addEventListener('touchstart', () => setActive(maxEl, minEl), { passive: true });
+    });
+
+    applyFilters();
+}
+
 loadAllCsvPoints().then(points => {
     const zoom = map.getZoom();
 
@@ -101,10 +185,12 @@ loadAllCsvPoints().then(points => {
           <a href="https://www.openstreetmap.org/relation/${p.boundary}" target="_blank">查看边界</a>｜<a href="https://www.openstreetmap.org/node/${p.node}" target="_blank">查看节点</a>
         `).on('click', () => {
           updateSidePanel(p);
-        });;
-
-            markers.push({ marker, score: p.score });
         });
+
+            markers.push({ marker, score: p.score, point: p });
+        });
+
+    bindFilterEvents();
 });
 
 map.on('zoomend', () => {
